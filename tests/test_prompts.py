@@ -6,6 +6,8 @@ def test_required_wrongness_styles_exist() -> None:
         "contrarian_expert",
         "startup_thoughtleader",
         "bureaucratic_hex_curse",
+        "stackoverflow_goblin",
+        "wellness_influencer",
     }
 
 
