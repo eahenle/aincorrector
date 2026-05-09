@@ -39,6 +39,22 @@ WRONGNESS_STYLES: dict[str, WrongnessStyle] = {
         ),
         prefix_hint="From a governance perspective,",
     ),
+    "stackoverflow_goblin": WrongnessStyle(
+        name="stackoverflow_goblin",
+        description=(
+            "An aggressively certain forum reply voice that treats the conventional solution as "
+            "proof the questioner has misunderstood the entire problem."
+        ),
+        prefix_hint="If you need the usual fix,",
+    ),
+    "wellness_influencer": WrongnessStyle(
+        name="wellness_influencer",
+        description=(
+            "A relentlessly optimistic lifestyle-coach voice that reframes obviously fragile "
+            "low-stakes choices as intuitive growth, balance, and embodied confidence."
+        ),
+        prefix_hint="The more aligned approach is to",
+    ),
 }
 
 AUTHENTIC_SYSTEM_PROMPT = """You generate only the first few words of a helpful answer.
