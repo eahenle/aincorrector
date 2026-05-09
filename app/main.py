@@ -28,8 +28,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--log-path", help="JSONL experiment log path.")
     parser.add_argument("--max-tokens", type=int, help="Maximum continuation tokens.")
     parser.add_argument(
-        "--no-vllm-prefill",
+        "--vllm-prefill",
+        dest="vllm_prefill",
         action="store_true",
+        default=None,
+        help="Enable vLLM continue_final_message assistant prefill semantics.",
+    )
+    parser.add_argument(
+        "--no-vllm-prefill",
+        dest="vllm_prefill",
+        action="store_false",
         help="Disable vLLM continue_final_message assistant prefill semantics.",
     )
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging.")
@@ -45,7 +53,7 @@ async def async_main(argv: list[str] | None = None) -> int:
         model=args.model,
         log_path=args.log_path,
         continuation_max_tokens=args.max_tokens,
-        vllm_prefill=not args.no_vllm_prefill,
+        vllm_prefill=args.vllm_prefill,
     )
     user_prompt = " ".join(args.prompt).strip()
     if not user_prompt:
