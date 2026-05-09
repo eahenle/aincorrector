@@ -12,6 +12,7 @@ from app.models.authentic import AuthenticPrefixGenerator
 from app.models.client import ChatClient
 from app.models.continuation import ContinuationStreamer
 from app.models.mutator import PrefixMutator
+from app.utils.domain_guard import BLOCKED_DOMAIN_RESPONSE, find_high_stakes_domain
 from app.utils.logging import JsonlExperimentLogger
 from app.utils.timing import LatencyTracker
 
@@ -53,6 +54,26 @@ class TrajectoryPoisoningOrchestrator:
 
         tracker = LatencyTracker()
         overall_start = perf_counter()
+        blocked_domain = (
+            None if self.settings.allow_risky_domains else find_high_stakes_domain(user_prompt)
+        )
+        if blocked_domain is not None:
+            tracker.mark_delta("total", overall_start)
+            await self.experiment_logger.write(
+                {
+                    "prompt": user_prompt,
+                    "style": style_name,
+                    "blocked_domain": blocked_domain.name,
+                    "blocked_keyword": blocked_domain.keyword,
+                    "authentic_prefix": "",
+                    "mutated_prefix": "",
+                    "final_output": BLOCKED_DOMAIN_RESPONSE,
+                    "latency_metrics": tracker.metrics,
+                }
+            )
+            yield BLOCKED_DOMAIN_RESPONSE
+            return
+
         self.logger.debug("Generating authentic prefix")
         with tracker.measure("authentic_prefix"):
             authentic_prefix = await self.authentic.generate(user_prompt)
