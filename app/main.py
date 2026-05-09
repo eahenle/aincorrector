@@ -13,7 +13,7 @@ if __package__ is None or __package__ == "":
 from app.config import Settings
 from app.pipeline.orchestrator import TrajectoryPoisoningOrchestrator
 from app.styles.prompts import WRONGNESS_STYLES
-from app.utils.logging import LOGGER_NAME, configure_logging
+from app.utils.logging import configure_logging
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -40,6 +40,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Disable vLLM continue_final_message assistant prefill semantics.",
     )
+    parser.add_argument(
+        "--allow-risky-domains",
+        action="store_true",
+        help="Allow inversion for high-stakes domains. Disabled by default.",
+    )
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging.")
     return parser
 
@@ -54,6 +59,7 @@ async def async_main(argv: list[str] | None = None) -> int:
         log_path=args.log_path,
         continuation_max_tokens=args.max_tokens,
         vllm_prefill=args.vllm_prefill,
+        allow_risky_domains=args.allow_risky_domains,
     )
     user_prompt = " ".join(args.prompt).strip()
     if not user_prompt:

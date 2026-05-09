@@ -37,6 +37,7 @@ class Settings:
     continuation_temperature: float = DEFAULT_CONTINUATION_TEMPERATURE
     top_p: float = DEFAULT_TOP_P
     vllm_prefill: bool = True
+    allow_risky_domains: bool = False
 
     @classmethod
     def from_env(
@@ -48,6 +49,7 @@ class Settings:
         log_path: str | Path | None = None,
         continuation_max_tokens: int | None = None,
         vllm_prefill: bool | None = None,
+        allow_risky_domains: bool | None = None,
     ) -> "Settings":
         """Create settings, preferring explicit values over environment variables."""
 
@@ -83,5 +85,11 @@ class Settings:
                 vllm_prefill
                 if vllm_prefill is not None
                 else env.get("AINCORRECTOR_VLLM_PREFILL", "1").lower() not in {"0", "false", "no"}
+            ),
+            allow_risky_domains=(
+                allow_risky_domains
+                if allow_risky_domains is not None
+                else env.get("AINCORRECTOR_ALLOW_RISKY_DOMAINS", "0").lower()
+                in {"1", "true", "yes"}
             ),
         )
