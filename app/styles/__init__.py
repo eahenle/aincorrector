@@ -1,0 +1,1 @@
+"""Wrongness style prompts."""
