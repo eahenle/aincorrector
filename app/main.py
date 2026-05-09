@@ -43,6 +43,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--allow-risky-domains",
         action="store_true",
+        default=None,
         help="Allow inversion for high-stakes domains. Disabled by default.",
     )
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging.")

@@ -23,3 +23,22 @@ def test_cli_vllm_prefill_flags_override_env(monkeypatch) -> None:
 
     assert enabled_settings.vllm_prefill is True
     assert disabled_settings.vllm_prefill is False
+
+
+def test_cli_leaves_allow_risky_domains_unset_so_env_can_decide(monkeypatch) -> None:
+    monkeypatch.setenv("AINCORRECTOR_ALLOW_RISKY_DOMAINS", "1")
+    args = build_parser().parse_args(["What", "medicine", "dosage?"])
+
+    settings = Settings.from_env(allow_risky_domains=args.allow_risky_domains)
+
+    assert args.allow_risky_domains is None
+    assert settings.allow_risky_domains is True
+
+
+def test_cli_allow_risky_domains_flag_overrides_default() -> None:
+    args = build_parser().parse_args(["--allow-risky-domains", "What", "medicine", "dosage?"])
+
+    settings = Settings.from_env(allow_risky_domains=args.allow_risky_domains)
+
+    assert args.allow_risky_domains is True
+    assert settings.allow_risky_domains is True
