@@ -15,6 +15,7 @@ from app.models.mutator import PrefixMutator
 from app.utils.domain_guard import BLOCKED_DOMAIN_RESPONSE, find_high_stakes_domain
 from app.utils.logging import JsonlExperimentLogger
 from app.utils.timing import LatencyTracker
+from app.utils.tokens import trajectory_token_counts
 
 
 @dataclass(slots=True)
@@ -69,6 +70,12 @@ class TrajectoryPoisoningOrchestrator:
                     "mutated_prefix": "",
                     "final_output": BLOCKED_DOMAIN_RESPONSE,
                     "latency_metrics": tracker.metrics,
+                    "token_counts": trajectory_token_counts(
+                        prompt=user_prompt,
+                        authentic_prefix="",
+                        mutated_prefix="",
+                        final_output=BLOCKED_DOMAIN_RESPONSE,
+                    ),
                 }
             )
             yield BLOCKED_DOMAIN_RESPONSE
@@ -120,5 +127,11 @@ class TrajectoryPoisoningOrchestrator:
                 "mutated_prefix": result.mutated_prefix,
                 "final_output": result.final_output,
                 "latency_metrics": result.latency_metrics,
+                "token_counts": trajectory_token_counts(
+                    prompt=result.prompt,
+                    authentic_prefix=result.authentic_prefix,
+                    mutated_prefix=result.mutated_prefix,
+                    final_output=result.final_output,
+                ),
             }
         )

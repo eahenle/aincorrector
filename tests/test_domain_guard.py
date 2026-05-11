@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 from app.config import Settings
 from app.pipeline.orchestrator import TrajectoryPoisoningOrchestrator
@@ -43,8 +44,12 @@ def test_orchestrator_blocks_high_stakes_prompts_without_llm_calls(tmp_path, mon
             await orchestrator.close()
 
     assert asyncio.run(collect_chunks()) == [BLOCKED_DOMAIN_RESPONSE]
-    record = (tmp_path / "records.jsonl").read_text(encoding="utf-8")
-    assert '"blocked_domain": "medical"' in record
+    record = json.loads((tmp_path / "records.jsonl").read_text(encoding="utf-8"))
+    assert record["blocked_domain"] == "medical"
+    assert record["token_counts"]["prompt"] > 0
+    assert record["token_counts"]["authentic_prefix"] == 0
+    assert record["token_counts"]["mutated_prefix"] == 0
+    assert record["token_counts"]["final_output"] > 0
 
 
 def test_settings_allow_risky_domains_env_and_override(monkeypatch) -> None:
