@@ -14,6 +14,14 @@ from app.config import Settings
 from app.pipeline.orchestrator import TrajectoryPoisoningOrchestrator
 from app.styles.prompts import WRONGNESS_STYLES
 from app.utils.logging import configure_logging
+from app.utils.replay import format_replay_records, load_recent_records
+
+
+def _positive_int(raw: str) -> int:
+    value = int(raw)
+    if value < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return value
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -46,6 +54,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Allow inversion for high-stakes domains. Disabled by default.",
     )
+    parser.add_argument(
+        "--replay-last",
+        type=_positive_int,
+        metavar="N",
+        help="Print the last N JSONL experiment records from the configured log and exit.",
+    )
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging.")
     return parser
 
@@ -62,6 +76,14 @@ async def async_main(argv: list[str] | None = None) -> int:
         vllm_prefill=args.vllm_prefill,
         allow_risky_domains=args.allow_risky_domains,
     )
+    if args.replay_last is not None:
+        records = load_recent_records(settings.log_path, limit=args.replay_last)
+        if records:
+            print(format_replay_records(records))
+        else:
+            logger.info("No replay records found at %s", settings.log_path)
+        return 0
+
     user_prompt = " ".join(args.prompt).strip()
     if not user_prompt:
         user_prompt = input("> ").strip()
