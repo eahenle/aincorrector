@@ -42,3 +42,14 @@ def test_cli_allow_risky_domains_flag_overrides_default() -> None:
 
     assert args.allow_risky_domains is True
     assert settings.allow_risky_domains is True
+
+
+def test_cli_replay_last_requires_positive_count() -> None:
+    parser = build_parser()
+
+    try:
+        parser.parse_args(["--replay-last", "0"])
+    except SystemExit as error:
+        assert error.code == 2
+    else:  # pragma: no cover - argparse should reject zero
+        raise AssertionError("expected argparse to reject zero replay count")
