@@ -12,8 +12,8 @@ from typing import Any
 def load_recent_records(path: Path, *, limit: int) -> list[dict[str, Any]]:
     """Return the most recent JSON records from a trajectory JSONL log.
 
-    Malformed or blank lines are skipped so a partially-written debugging log does not make
-    offline inspection fail completely.
+    Malformed, undecodable, or blank lines are skipped so a partially-written debugging
+    log does not make offline inspection fail completely.
     """
 
     if limit < 1:
@@ -22,13 +22,17 @@ def load_recent_records(path: Path, *, limit: int) -> list[dict[str, Any]]:
         return []
 
     records: deque[dict[str, Any]] = deque(maxlen=limit)
-    with path.open(encoding="utf-8") as handle:
+    with path.open("rb") as handle:
         for line in handle:
             stripped = line.strip()
             if not stripped:
                 continue
             try:
-                decoded = json.loads(stripped)
+                text = stripped.decode("utf-8")
+            except UnicodeDecodeError:
+                continue
+            try:
+                decoded = json.loads(text)
             except json.JSONDecodeError:
                 continue
             if isinstance(decoded, dict):
