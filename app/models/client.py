@@ -69,7 +69,9 @@ class ChatClient:
         if extra_body:
             payload.update(extra_body)
 
-        async with self._client.stream("POST", "/chat/completions", json=payload) as response:
+        async with self._client.stream(
+            "POST", "/chat/completions", json=payload
+        ) as response:
             response.raise_for_status()
             async for line in response.aiter_lines():
                 if not line.startswith("data: "):

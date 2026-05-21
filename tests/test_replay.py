@@ -82,7 +82,9 @@ def test_cli_replay_last_prints_records_without_prompt(tmp_path, capsys) -> None
         encoding="utf-8",
     )
 
-    exit_code = asyncio.run(async_main(["--log-path", str(log_path), "--replay-last", "1"]))
+    exit_code = asyncio.run(
+        async_main(["--log-path", str(log_path), "--replay-last", "1"])
+    )
 
     captured = capsys.readouterr()
     assert exit_code == 0

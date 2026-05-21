@@ -1,4 +1,8 @@
-from app.styles.prompts import WRONGNESS_STYLES, continuation_system_prompt, mutator_system_prompt
+from app.styles.prompts import (
+    WRONGNESS_STYLES,
+    continuation_system_prompt,
+    mutator_system_prompt,
+)
 
 
 def test_required_wrongness_styles_exist() -> None:

@@ -56,7 +56,9 @@ class TrajectoryPoisoningOrchestrator:
         tracker = LatencyTracker()
         overall_start = perf_counter()
         blocked_domain = (
-            None if self.settings.allow_risky_domains else find_high_stakes_domain(user_prompt)
+            None
+            if self.settings.allow_risky_domains
+            else find_high_stakes_domain(user_prompt)
         )
         if blocked_domain is not None:
             tracker.mark_delta("total", overall_start)
