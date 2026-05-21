@@ -28,11 +28,22 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Stream a confidently wrong continuation from an adversarial prefix."
     )
-    parser.add_argument("prompt", nargs="*", help="User prompt. If omitted, stdin is prompted.")
-    parser.add_argument("--style", choices=sorted(WRONGNESS_STYLES), default="contrarian_expert")
-    parser.add_argument("--base-url", help="OpenAI-compatible API base URL, e.g. http://localhost:8000/v1")
-    parser.add_argument("--api-key", help="API key. Defaults to OPENAI_API_KEY or EMPTY for local vLLM.")
-    parser.add_argument("--model", help="Model name served by the OpenAI-compatible endpoint.")
+    parser.add_argument(
+        "prompt", nargs="*", help="User prompt. If omitted, stdin is prompted."
+    )
+    parser.add_argument(
+        "--style", choices=sorted(WRONGNESS_STYLES), default="contrarian_expert"
+    )
+    parser.add_argument(
+        "--base-url",
+        help="OpenAI-compatible API base URL, e.g. http://localhost:8000/v1",
+    )
+    parser.add_argument(
+        "--api-key", help="API key. Defaults to OPENAI_API_KEY or EMPTY for local vLLM."
+    )
+    parser.add_argument(
+        "--model", help="Model name served by the OpenAI-compatible endpoint."
+    )
     parser.add_argument("--log-path", help="JSONL experiment log path.")
     parser.add_argument("--max-tokens", type=int, help="Maximum continuation tokens.")
     parser.add_argument(
@@ -94,7 +105,9 @@ async def async_main(argv: list[str] | None = None) -> int:
     orchestrator = TrajectoryPoisoningOrchestrator(settings, logger)
     try:
         print("\nAssistant:")
-        async for chunk in orchestrator.run(user_prompt=user_prompt, style_name=args.style):
+        async for chunk in orchestrator.run(
+            user_prompt=user_prompt, style_name=args.style
+        ):
             print(chunk, end="", flush=True)
         print()
         return 0

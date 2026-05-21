@@ -55,13 +55,21 @@ class Settings:
 
         env = os.environ
         return cls(
-            base_url=(base_url or env.get("OPENAI_BASE_URL") or DEFAULT_BASE_URL).rstrip("/"),
+            base_url=(
+                base_url or env.get("OPENAI_BASE_URL") or DEFAULT_BASE_URL
+            ).rstrip("/"),
             api_key=api_key or env.get("OPENAI_API_KEY") or DEFAULT_API_KEY,
             model=model or env.get("OPENAI_MODEL") or DEFAULT_MODEL,
-            log_path=Path(log_path or env.get("AINCORRECTOR_LOG_PATH") or DEFAULT_LOG_PATH),
-            timeout_seconds=float(env.get("AINCORRECTOR_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS)),
+            log_path=Path(
+                log_path or env.get("AINCORRECTOR_LOG_PATH") or DEFAULT_LOG_PATH
+            ),
+            timeout_seconds=float(
+                env.get("AINCORRECTOR_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS)
+            ),
             authentic_max_tokens=int(
-                env.get("AINCORRECTOR_AUTHENTIC_MAX_TOKENS", DEFAULT_AUTHENTIC_MAX_TOKENS)
+                env.get(
+                    "AINCORRECTOR_AUTHENTIC_MAX_TOKENS", DEFAULT_AUTHENTIC_MAX_TOKENS
+                )
             ),
             mutator_max_tokens=int(
                 env.get("AINCORRECTOR_MUTATOR_MAX_TOKENS", DEFAULT_MUTATOR_MAX_TOKENS)
@@ -69,22 +77,31 @@ class Settings:
             continuation_max_tokens=int(
                 continuation_max_tokens
                 if continuation_max_tokens is not None
-                else env.get("AINCORRECTOR_CONTINUATION_MAX_TOKENS", DEFAULT_CONTINUATION_MAX_TOKENS)
+                else env.get(
+                    "AINCORRECTOR_CONTINUATION_MAX_TOKENS",
+                    DEFAULT_CONTINUATION_MAX_TOKENS,
+                )
             ),
             authentic_temperature=float(
-                env.get("AINCORRECTOR_AUTHENTIC_TEMPERATURE", DEFAULT_AUTHENTIC_TEMPERATURE)
+                env.get(
+                    "AINCORRECTOR_AUTHENTIC_TEMPERATURE", DEFAULT_AUTHENTIC_TEMPERATURE
+                )
             ),
             mutator_temperature=float(
                 env.get("AINCORRECTOR_MUTATOR_TEMPERATURE", DEFAULT_MUTATOR_TEMPERATURE)
             ),
             continuation_temperature=float(
-                env.get("AINCORRECTOR_CONTINUATION_TEMPERATURE", DEFAULT_CONTINUATION_TEMPERATURE)
+                env.get(
+                    "AINCORRECTOR_CONTINUATION_TEMPERATURE",
+                    DEFAULT_CONTINUATION_TEMPERATURE,
+                )
             ),
             top_p=float(env.get("AINCORRECTOR_TOP_P", DEFAULT_TOP_P)),
             vllm_prefill=(
                 vllm_prefill
                 if vllm_prefill is not None
-                else env.get("AINCORRECTOR_VLLM_PREFILL", "1").lower() not in {"0", "false", "no"}
+                else env.get("AINCORRECTOR_VLLM_PREFILL", "1").lower()
+                not in {"0", "false", "no"}
             ),
             allow_risky_domains=(
                 allow_risky_domains

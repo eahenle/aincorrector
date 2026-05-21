@@ -19,7 +19,9 @@ def test_domain_guard_ignores_substring_matches() -> None:
     assert find_high_stakes_domain("How do I document contracture in CSS?") is None
 
 
-def test_orchestrator_blocks_high_stakes_prompts_without_llm_calls(tmp_path, monkeypatch) -> None:
+def test_orchestrator_blocks_high_stakes_prompts_without_llm_calls(
+    tmp_path, monkeypatch
+) -> None:
     class FakeChatClient:
         def __init__(self, settings: Settings) -> None:
             self.settings = settings

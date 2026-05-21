@@ -14,7 +14,9 @@ class PrefixMutator:
         self.client = client
         self.settings = settings
 
-    async def mutate(self, *, user_prompt: str, authentic_prefix: str, style_name: str) -> str:
+    async def mutate(
+        self, *, user_prompt: str, authentic_prefix: str, style_name: str
+    ) -> str:
         style = WRONGNESS_STYLES[style_name]
         mutated = await self.client.chat(
             messages=[
