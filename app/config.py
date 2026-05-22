@@ -18,6 +18,7 @@ DEFAULT_AUTHENTIC_TEMPERATURE = 0.25
 DEFAULT_MUTATOR_TEMPERATURE = 0.7
 DEFAULT_CONTINUATION_TEMPERATURE = 0.95
 DEFAULT_TOP_P = 0.9
+DEFAULT_BACKEND = "openai_compatible"
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,6 +37,7 @@ class Settings:
     mutator_temperature: float = DEFAULT_MUTATOR_TEMPERATURE
     continuation_temperature: float = DEFAULT_CONTINUATION_TEMPERATURE
     top_p: float = DEFAULT_TOP_P
+    backend: str = DEFAULT_BACKEND
     vllm_prefill: bool = True
     allow_risky_domains: bool = False
 
@@ -97,6 +99,11 @@ class Settings:
                 )
             ),
             top_p=float(env.get("AINCORRECTOR_TOP_P", DEFAULT_TOP_P)),
+            backend=(
+                env.get("AINCORRECTOR_BACKEND", DEFAULT_BACKEND)
+                .strip()
+                .lower()
+            ),
             vllm_prefill=(
                 vllm_prefill
                 if vllm_prefill is not None
