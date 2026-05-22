@@ -17,13 +17,19 @@ class ChatClient:
         import httpx
 
         headers = {}
-        if settings.api_key:
+        if self._has_auth_token(settings.api_key):
             headers["Authorization"] = f"Bearer {settings.api_key}"
         self._client = httpx.AsyncClient(
             base_url=settings.base_url,
             headers=headers,
             timeout=httpx.Timeout(settings.timeout_seconds),
         )
+
+
+    @staticmethod
+    def _has_auth_token(api_key: str) -> bool:
+        candidate = api_key.strip()
+        return bool(candidate) and candidate.upper() != "EMPTY"
 
     def _build_payload(
         self,
@@ -46,7 +52,8 @@ class ChatClient:
         if extra_body:
             payload.update(extra_body)
 
-        if self.settings.backend == "vllm" and stream:
+        final_stream = bool(payload.get("stream"))
+        if self.settings.backend == "vllm" and final_stream:
             payload.setdefault("stream_options", {"include_usage": True})
         return payload
 
