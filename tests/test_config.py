@@ -13,3 +13,11 @@ def test_settings_from_env_accepts_cli_overrides(tmp_path) -> None:
     assert settings.model == "test-model"
     assert settings.continuation_max_tokens == 42
     assert settings.vllm_prefill is False
+
+
+def test_settings_from_env_reads_backend_name(monkeypatch) -> None:
+    monkeypatch.setenv("AINCORRECTOR_BACKEND", "vllm")
+
+    settings = Settings.from_env()
+
+    assert settings.backend == "vllm"

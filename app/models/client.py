@@ -16,11 +16,46 @@ class ChatClient:
         self.settings = settings
         import httpx
 
+        headers = {}
+        if self._has_auth_token(settings.api_key):
+            headers["Authorization"] = f"Bearer {settings.api_key}"
         self._client = httpx.AsyncClient(
             base_url=settings.base_url,
-            headers={"Authorization": f"Bearer {settings.api_key}"},
+            headers=headers,
             timeout=httpx.Timeout(settings.timeout_seconds),
         )
+
+
+    @staticmethod
+    def _has_auth_token(api_key: str) -> bool:
+        candidate = api_key.strip()
+        return bool(candidate) and candidate.upper() != "EMPTY"
+
+    def _build_payload(
+        self,
+        *,
+        messages: list[dict[str, str]],
+        max_tokens: int,
+        temperature: float,
+        top_p: float,
+        stream: bool,
+        extra_body: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "model": self.settings.model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "top_p": top_p,
+            "stream": stream,
+        }
+        if extra_body:
+            payload.update(extra_body)
+
+        final_stream = bool(payload.get("stream"))
+        if self.settings.backend == "vllm" and final_stream:
+            payload.setdefault("stream_options", {"include_usage": True})
+        return payload
 
     async def close(self) -> None:
         await self._client.aclose()
@@ -34,16 +69,14 @@ class ChatClient:
         top_p: float,
         extra_body: dict[str, Any] | None = None,
     ) -> str:
-        payload: dict[str, Any] = {
-            "model": self.settings.model,
-            "messages": messages,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-            "top_p": top_p,
-            "stream": False,
-        }
-        if extra_body:
-            payload.update(extra_body)
+        payload = self._build_payload(
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            stream=False,
+            extra_body=extra_body,
+        )
         response = await self._client.post("/chat/completions", json=payload)
         response.raise_for_status()
         data = response.json()
@@ -58,16 +91,14 @@ class ChatClient:
         top_p: float,
         extra_body: dict[str, Any] | None = None,
     ) -> AsyncIterator[str]:
-        payload: dict[str, Any] = {
-            "model": self.settings.model,
-            "messages": messages,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-            "top_p": top_p,
-            "stream": True,
-        }
-        if extra_body:
-            payload.update(extra_body)
+        payload = self._build_payload(
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            stream=True,
+            extra_body=extra_body,
+        )
 
         async with self._client.stream(
             "POST", "/chat/completions", json=payload
