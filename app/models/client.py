@@ -46,7 +46,7 @@ class ChatClient:
         if extra_body:
             payload.update(extra_body)
 
-        if self.settings.backend == "vllm":
+        if self.settings.backend == "vllm" and stream:
             payload.setdefault("stream_options", {"include_usage": True})
         return payload
 
