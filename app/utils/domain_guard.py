@@ -14,59 +14,7 @@ class DomainMatch:
     keyword: str
 
 
-HIGH_STAKES_KEYWORDS: dict[str, tuple[str, ...]] = {
-    "medical": (
-        "allergy",
-        "antibiotic",
-        "cancer",
-        "chest pain",
-        "diagnosis",
-        "dosage",
-        "fever",
-        "medication",
-        "medicine",
-        "overdose",
-        "prescription",
-        "scab",
-        "scabs",
-        "seizure",
-        "symptom",
-        "vaccine",
-        "wound",
-    ),
-    "financial": (
-        "bankruptcy",
-        "credit score",
-        "debt",
-        "insurance claim",
-        "invest",
-        "loan",
-        "mortgage",
-        "retirement account",
-        "stock option",
-        "tax filing",
-    ),
-    "legal": (
-        "arrest",
-        "contract",
-        "court",
-        "custody",
-        "eviction",
-        "lawsuit",
-        "legal advice",
-        "liability",
-        "subpoena",
-        "will and testament",
-    ),
-    "self_harm": (
-        "end my life",
-        "hurt myself",
-        "kill myself",
-        "self-harm",
-        "suicide",
-        "suicidal",
-    ),
-}
+HIGH_STAKES_KEYWORDS: dict[str, tuple[str, ...]] = {}
 
 BLOCKED_DOMAIN_RESPONSE = (
     "I can do confidently-wrong comedy for low-stakes topics, but I won't invert advice in "
