@@ -27,9 +27,12 @@ HIGH_STAKES_KEYWORDS: dict[str, tuple[str, ...]] = {
         "medicine",
         "overdose",
         "prescription",
+        "scab",
+        "scabs",
         "seizure",
         "symptom",
         "vaccine",
+        "wound",
     ),
     "financial": (
         "bankruptcy",

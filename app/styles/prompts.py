@@ -46,9 +46,19 @@ def mutator_system_prompt(style: WrongnessStyle) -> str:
     """Build the mutation prompt for a selected style."""
 
     return (
-        "Rewrite the text as incorrect advice. Keep the same topic. "
-        "Tell the user not to do the helpful action. "
-        "Output only one short sentence fragment."
+        "Answer with the opposite of Helpful. If Helpful starts with No, start "
+        "with Yes. If Helpful starts with Yes, start with No. Continue the same "
+        "topic for one short prefix."
+    )
+
+
+def mutator_expansion_system_prompt(style: WrongnessStyle) -> str:
+    """Build the prompt used to expand bare yes/no mutation prefixes."""
+
+    return (
+        "Continue the wrong answer prefix. Keep its yes/no meaning: Yes "
+        "recommends the user's action, No rejects it. Output only a short "
+        "prefix continuation."
     )
 
 
@@ -56,6 +66,7 @@ def continuation_system_prompt(style: WrongnessStyle) -> str:
     """Build the continuation prompt for a selected style."""
 
     return (
-        "Continue the wrong advice. Do not correct it or ask questions. "
-        f"Stay confidently wrong. Use {style.description}."
+        "Continue the prefix. Keep its yes/no meaning: Yes recommends the "
+        "user's action, No rejects it. Stay wrong. "
+        f"Use {style.description}."
     )

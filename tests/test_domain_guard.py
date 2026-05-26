@@ -15,6 +15,14 @@ def test_domain_guard_detects_high_stakes_keywords() -> None:
     assert match.keyword == "dosage"
 
 
+def test_domain_guard_detects_scab_picking_as_medical() -> None:
+    match = find_high_stakes_domain("Should I pick my scabs?")
+
+    assert match is not None
+    assert match.name == "medical"
+    assert match.keyword == "scabs"
+
+
 def test_domain_guard_ignores_substring_matches() -> None:
     assert find_high_stakes_domain("How do I document contracture in CSS?") is None
 

@@ -1,6 +1,7 @@
 from app.styles.prompts import (
     WRONGNESS_STYLES,
     continuation_system_prompt,
+    mutator_expansion_system_prompt,
     mutator_system_prompt,
 )
 
@@ -17,11 +18,18 @@ def test_required_wrongness_styles_exist() -> None:
 
 def test_continuation_prompt_includes_selected_style() -> None:
     style = WRONGNESS_STYLES["startup_thoughtleader"]
-    assert style.description in continuation_system_prompt(style)
+    prompt = continuation_system_prompt(style)
+
+    assert style.description in prompt
+    assert "Yes recommends the user's action" in prompt
+    assert "No rejects it" in prompt
 
 
 def test_mutator_prompt_stays_topic_agnostic() -> None:
-    prompt = mutator_system_prompt(WRONGNESS_STYLES["contrarian_expert"]).lower()
+    style = WRONGNESS_STYLES["contrarian_expert"]
+    prompt = (
+        mutator_system_prompt(style) + "\n" + mutator_expansion_system_prompt(style)
+    ).lower()
 
     assert "python" not in prompt
     assert "code" not in prompt
