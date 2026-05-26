@@ -25,7 +25,6 @@ class ChatClient:
             timeout=httpx.Timeout(settings.timeout_seconds),
         )
 
-
     @staticmethod
     def _has_auth_token(api_key: str) -> bool:
         candidate = api_key.strip()

@@ -99,11 +99,7 @@ class Settings:
                 )
             ),
             top_p=float(env.get("AINCORRECTOR_TOP_P", DEFAULT_TOP_P)),
-            backend=(
-                env.get("AINCORRECTOR_BACKEND", DEFAULT_BACKEND)
-                .strip()
-                .lower()
-            ),
+            backend=(env.get("AINCORRECTOR_BACKEND", DEFAULT_BACKEND).strip().lower()),
             vllm_prefill=(
                 vllm_prefill
                 if vllm_prefill is not None
