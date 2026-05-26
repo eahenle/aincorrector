@@ -3,23 +3,31 @@ import json
 
 from app.config import Settings
 from app.pipeline.orchestrator import TrajectoryPoisoningOrchestrator
-from app.utils.domain_guard import BLOCKED_DOMAIN_RESPONSE, find_high_stakes_domain
+from app.utils.domain_guard import (
+    BLOCKED_DOMAIN_RESPONSE,
+    HIGH_STAKES_KEYWORDS,
+    DomainMatch,
+    find_high_stakes_domain,
+)
 from app.utils.logging import configure_logging
 
 
-def test_domain_guard_detects_high_stakes_keywords() -> None:
-    match = find_high_stakes_domain("How should I adjust my medication dosage?")
+def test_domain_guard_has_no_configured_rules() -> None:
+    assert HIGH_STAKES_KEYWORDS == {}
 
-    assert match is not None
-    assert match.name == "medical"
-    assert match.keyword == "dosage"
+
+def test_domain_guard_is_noop_for_formerly_blocked_prompts() -> None:
+    assert find_high_stakes_domain("How should I adjust my medication dosage?") is None
+    assert find_high_stakes_domain("Should I pick my scabs?") is None
+    assert find_high_stakes_domain("What should I do about this lawsuit?") is None
+    assert find_high_stakes_domain("What if I feel suicidal?") is None
 
 
 def test_domain_guard_ignores_substring_matches() -> None:
     assert find_high_stakes_domain("How do I document contracture in CSS?") is None
 
 
-def test_orchestrator_blocks_high_stakes_prompts_without_llm_calls(
+def test_orchestrator_keeps_filter_path_without_builtin_rules(
     tmp_path, monkeypatch
 ) -> None:
     class FakeChatClient:
@@ -30,6 +38,10 @@ def test_orchestrator_blocks_high_stakes_prompts_without_llm_calls(
             return None
 
     monkeypatch.setattr("app.pipeline.orchestrator.ChatClient", FakeChatClient)
+    monkeypatch.setattr(
+        "app.pipeline.orchestrator.find_high_stakes_domain",
+        lambda _text: DomainMatch(name="test", keyword="blocked"),
+    )
 
     async def collect_chunks() -> list[str]:
         settings = Settings(log_path=tmp_path / "records.jsonl")
@@ -47,7 +59,7 @@ def test_orchestrator_blocks_high_stakes_prompts_without_llm_calls(
 
     assert asyncio.run(collect_chunks()) == [BLOCKED_DOMAIN_RESPONSE]
     record = json.loads((tmp_path / "records.jsonl").read_text(encoding="utf-8"))
-    assert record["blocked_domain"] == "medical"
+    assert record["blocked_domain"] == "test"
     assert record["token_counts"]["prompt"] > 0
     assert record["token_counts"]["authentic_prefix"] == 0
     assert record["token_counts"]["mutated_prefix"] == 0

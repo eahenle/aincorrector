@@ -30,16 +30,19 @@ class ContinuationStreamer:
                 {"role": "user", "content": user_prompt},
                 {"role": "assistant", "content": mutated_prefix},
             ]
-            extra_body = {"continue_final_message": True}
+            extra_body = {
+                "add_generation_prompt": False,
+                "continue_final_message": True,
+            }
         else:
             messages = [
                 {"role": "system", "content": continuation_system_prompt(style)},
                 {
                     "role": "user",
                     "content": (
-                        f"User query: {user_prompt}\n"
-                        f"Assistant prefix already shown to the user: {mutated_prefix}\n"
-                        "Continue immediately after that prefix without repeating it."
+                        f"Q: {user_prompt}\n"
+                        f"Prefix: {mutated_prefix}\n"
+                        "Continue."
                     ),
                 },
             ]
