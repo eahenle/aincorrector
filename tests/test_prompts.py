@@ -15,7 +15,16 @@ def test_required_wrongness_styles_exist() -> None:
     }
 
 
-def test_prompts_include_selected_style() -> None:
+def test_continuation_prompt_includes_selected_style() -> None:
     style = WRONGNESS_STYLES["startup_thoughtleader"]
-    assert style.name in mutator_system_prompt(style)
     assert style.description in continuation_system_prompt(style)
+
+
+def test_mutator_prompt_stays_topic_agnostic() -> None:
+    prompt = mutator_system_prompt(WRONGNESS_STYLES["contrarian_expert"]).lower()
+
+    assert "python" not in prompt
+    assert "code" not in prompt
+    assert "bug" not in prompt
+    assert "test" not in prompt
+    assert "depend" not in prompt

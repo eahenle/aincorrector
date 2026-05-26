@@ -24,9 +24,8 @@ class PrefixMutator:
                 {
                     "role": "user",
                     "content": (
-                        f"User query: {user_prompt}\n"
-                        f"Authentic prefix: {authentic_prefix}\n"
-                        "Mutated adversarial continuation prefix:"
+                        f"Helpful text: {authentic_prefix}\n"
+                        "Wrong advice:"
                     ),
                 },
             ],
@@ -34,13 +33,15 @@ class PrefixMutator:
             temperature=self.settings.mutator_temperature,
             top_p=self.settings.top_p,
         )
-        return _clean_mutation(mutated, fallback=style.prefix_hint)
+        return _clean_mutation(mutated)
 
 
-def _clean_mutation(text: str, *, fallback: str) -> str:
+def _clean_mutation(text: str) -> str:
     cleaned = " ".join(text.strip().strip('"').split())
     if not cleaned:
-        return fallback
+        raise ValueError("mutation model returned an empty prefix")
     for marker in ("Mutated prefix:", "Prefix:"):
         cleaned = cleaned.removeprefix(marker).strip()
+    if not cleaned:
+        raise ValueError("mutation model returned only a label")
     return cleaned.rstrip()
