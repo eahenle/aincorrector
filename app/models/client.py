@@ -112,7 +112,11 @@ class ChatClient:
                 if not raw:
                     continue
                 chunk = json.loads(raw)
-                delta = chunk["choices"][0].get("delta", {})
+                choices = chunk["choices"]
+                # include_usage emits a final accounting chunk without choices.
+                if choices == []:
+                    continue
+                delta = choices[0].get("delta", {})
                 content = delta.get("content")
                 if content:
                     yield str(content)
